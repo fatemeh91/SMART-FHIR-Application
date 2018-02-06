@@ -1,0 +1,26 @@
+#F_sepsis 
+sudo code:
+
+for each patient :
+	for each time step:
+		read SIRS data features
+		feed NN and get the Value_function
+		save the value_function of each time step as vector (V)
+	done
+	
+	update value function using F_TD_lambda(V,R)
+	compute MSE of NN
+	backpropagte and update weights and bias
+
+done
+function F_TD_lambda(V,R):
+	for each time step in V:
+		if R(t)!= -1 :
+			V(St)= R(t)+lambda*v(st+1)
+		else :
+			V(St)=-1
+	done
+return V
+
+
+
