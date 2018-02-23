@@ -24,9 +24,7 @@ def main():
     Feature_no = tf.placeholder(tf.int32,[])
     
     Auto_Encoder_instance=Auto_Encoder(X=X,n_featurs=35,opt = 'Adam')
-    Auto_Encoder_instance.Loss_opt()
-    
-    
+        
     patient_name = []
     lab_date = []
     lab_test = []
@@ -47,24 +45,20 @@ def main():
                     b.append(a)
                 lab_test.append(np.array(b))
         
-        lab_test1 = np.array(lab_test[1]).reshape(1,35)
         labdate = tf.convert_to_tensor(lab_date)
         
         
-        print lab_test1.shape[1]
-        print lab_test1
         #sess.run(Auto_Encoder_instance.Loss_opt,feed_dict={X:lab_test1,Feature_no:35})
-        g=sess.run(Auto_Encoder_instance.encoder,feed_dict={X:lab_test1,Feature_no:35})
-        print g
-        
-#        #sess.run(Auto_Encoder_instance.Auto_Encoder(),)
-#        #Auto_Encoder_instance = Auto_Encoder(X,lab_test.shape[1])
-#        
-#        _, l = sess.run(Loss, feed_dict={X:lab_test[1]})
-#        print l.eval()
-#    #main_nn = main_network(num_features,n_h1,n_h2)
-#    #Value_Iteration(main_nn,patients,labtest,labdate)# for now is just td 1 to build the sckolten 
-#     
+        for i in range(190):
+            lab_test1 = np.array(lab_test[i]).reshape(1,35)
+            g=sess.run(Auto_Encoder_instance.Loss_opt,feed_dict={X:lab_test1,Feature_no:35})
+            
+            print g
+        print 'Test Set'
+        for i in range(10):
+            lab_test1 = np.array(lab_test[i]).reshape(1,35)
+            g=sess.run(Auto_Encoder_instance.encoder,feed_dict={X:lab_test1,Feature_no:35})
+            print g
             
     
     return None
