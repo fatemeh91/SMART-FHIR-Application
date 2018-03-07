@@ -28,11 +28,11 @@ if nargout >1
         [V, g_WL, g_St]= g_evalVNetwork(S_t(t,:), WL);
         E = (y - V); % error
         Loss = Loss + 0.5/T * E.^2;  % lost
-        % dE_dW = dE_dQ x dQ_dW
+        % dE_dW = dE_dV x dV_dW
         for la=1:num_layers
             dL_WL{la} = dL_WL{la} - E * g_WL{la} / T;
         end
-        % dE_dSt = dE_dQ x dQ_dSt
+        % dE_dSt = dE_dV x dV_dSt
         dL_St(t,:) = - E * g_St';
     end
 else
