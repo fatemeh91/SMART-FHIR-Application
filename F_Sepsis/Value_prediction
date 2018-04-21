@@ -1,0 +1,176 @@
+#!/usr/bin/env python2
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Mar 20 09:33:49 2018
+
+@author: iam
+"""
+
+import tensorflow as tf
+import sys
+import os
+import numpy as np
+import pickle
+from main_network2 import main_network
+
+def main():
+    
+    tf.InteractiveSession()
+    logs_path = '/tmp/tensorflow_logs/example/newversion/'
+    learning_rate = 5
+    num_steps = 30
+    batch_size=10
+    n_feature = 131
+    n_hidden_1 = 131 # 1st layer number of neurons
+    n_hidden_2 = 131 # 2nd layer number of neurons
+    
+    display_step=10
+    # tf graph encoder  input
+    X = tf.placeholder(tf.float32, [None,131])
+    #Acc_loss = tf.placeholder(tf.float32)
+    
+    # tf graph main network input
+    St=tf.placeholder(tf.float32, [None,159])
+    Stp1=tf.placeholder(tf.float32, [None,159])
+    R_CT=tf.placeholder(tf.float32, [None])
+    time_stamp=tf.placeholder(tf.float32)
+    
+    
+    
+    
+    
+    # Store layers weight & bias
+    weights = {
+        'encoder_h1': tf.Variable(tf.random_normal([n_feature,n_hidden_1])),
+        'encoder_h2': tf.Variable(tf.random_normal([n_hidden_1,n_hidden_2])),
+        'decoder_h1': tf.Variable(tf.random_normal([n_hidden_2,n_hidden_1])),
+        'decoder_h2': tf.Variable(tf.random_normal([n_hidden_1,n_feature]))
+    }
+    biases = {
+        'encoder_b1': tf.Variable(tf.zeros([n_hidden_1])),
+        'encoder_b2': tf.Variable(tf.zeros([n_hidden_2])),
+        'decoder_b1': tf.Variable(tf.zeros([n_hidden_1])),
+        'decoder_b2': tf.Variable(tf.zeros([n_feature])),
+    }
+
+
+    
+    
+    
+    def encoder(x):
+        layer_1= tf.nn.sigmoid(tf.add(tf.matmul(X, weights['encoder_h1']),biases['encoder_b1']))
+        # Encoder Hidden layer with sigmoid activation #2
+        layer_2 = tf.nn.sigmoid(tf.add(tf.matmul(layer_1, weights['encoder_h2']),biases['encoder_b2']))
+        #self._encoder = layer_2
+        return layer_2 #self._encoder
+    
+    def decoder(y):
+        layer_1 = tf.nn.sigmoid(tf.add(tf.matmul(y,weights['decoder_h1']),biases['decoder_b1']))
+        # Decoder Hidden layer with sigmoid activation #2
+        layer_2 = tf.nn.sigmoid(tf.add(tf.matmul(layer_1, weights['decoder_h2']),biases['decoder_b2']))
+        #self._decoder = layer_2
+        return layer_2
+    
+    #construct a model
+    encode_in=encoder(X)
+    decoded_out = decoder(encode_in)
+    
+    # Define loss and optimizer for our encoder 
+    #loss_op =tf.add(tf.reduce_mean(tf.pow((X - decoded_out), 2)),Acc_loss)
+    loss = tf.reduce_mean(tf.pow((X - decoded_out), 2))
+    optimizer =tf.train.RMSPropOptimizer(learning_rate=learning_rate).minimize(loss)
+    
+    
+    # define main network and function value
+    
+    
+    
+    init = tf.initialize_all_variables()
+    
+    data_path = '/Users/iam/Documents/eICU/Credit_assingment/Shamim_Value_Iteration/Value_Iteration/Emory_Sepsis_RL_Data_ProcessedALL4.pickle'
+    foldind_path = '/Users/iam/Documents/eICU/Credit_assingment/Shamim_Value_Iteration/Value_Iteration/Emory_Sepsis_RL_Data_FOLDIND.pickle'
+    
+    DATA = pickle.load( open( data_path, "rb" ) )['DATA_RL']
+    FOLD_IND = pickle.load( open( foldind_path, "rb" ) )['FOLD_INDX']
+    for fold_index in range(1): #len(FOLD_IND)
+        DATA_Train = DATA[0:500]#[FOLD_IND[fold_index]['index_train']]
+        DATA_Test = DATA[501:600] #[FOLD_IND[fold_index]['index_test']]   
+        
+        RL_DATA_X=[]
+        RL_DATA_COVAR=[]
+        RL_DATA_Rewards=[]
+        
+        RL_DATA=[]
+        
+        
+        # PRE TRAINING 
+        for Data_train in DATA_Train:
+            RL_DATA_X.append(np.asarray(np.transpose(Data_train['X'])))
+            RL_DATA_COVAR.append(np.asarray(np.transpose(Data_train['COVAR'])))
+            RL_DATA_Rewards.append(np.sum(np.asarray(np.transpose(Data_train['Rewards'])),1))
+            
+            AE_DATA=RL_DATA_X[0];
+        for d_ind in range(1,len(RL_DATA_X)):
+            AE_DATA=np.concatenate((RL_DATA_X[d_ind] ,AE_DATA),0)
+        
+            
+            
+        # DATA Training
+        for d_ind in range(len(RL_DATA_X)):
+            RL_DATA.append(np.concatenate([RL_DATA_X[d_ind],RL_DATA_COVAR[d_ind]],1))
+            
+        #V_Itr=main_network(R_CT=R_CT,St=St,Stp1=Stp1,time_stamp=time_stamp,n_featurs=159)
+        
+        
+        
+        with tf.Session() as sess:
+            
+            # Run the initializer
+            sess.run(init)
+            summary_writer = tf.summary.FileWriter(logs_path)
+            import random 
+            #print Acc_Loss.shap()
+            i =0
+            # auto encoder
+            for step in range(1, num_steps+1):
+                random.shuffle(AE_DATA)
+                for batch_ind in range(int(AE_DATA.shape[0]/batch_size)):
+                    bach_X=AE_DATA[batch_ind * batch_size : batch_ind * batch_size + batch_size ,:]
+                    print bach_X
+                    import sys
+                    sys.exit(1)
+                    _,batch_loss=sess.run([optimizer,loss],feed_dict={X:bach_X})
+                    #print batch_loss
+                    #print sess.run([weights],feed_dict={X:RL_DATA_X[x_ind],Acc_loss:Acc_Loss[0]})
+                        
+                    #_,batch_loss=sess.run([optimizer,loss],feed_dict={X:RL_DATA_X[x_ind],Acc_loss:Acc_Loss[0]})
+                    #print batch_loss
+                    if(i%display_step==0):
+                        summary=tf.Summary()
+                        summary.value.add(tag='myVar', simple_value = batch_loss)
+                        summary_writer.add_summary(summary,i)
+                        print batch_loss 
+                    i = i+1
+            summary_writer.flush()
+            
+            #V_Itr=main_network(R_CT=R_CT,St=St,Stp1=Stp1,time_stamp=time_stamp,n_featurs=159)
+            #sess.run(tf.initialize_all_variables())
+            
+            #for raw_data_ind in range(len(RL_DATA)):
+             #   raw_data = RL_DATA[raw_data_ind]
+              #  C_ST=raw_data[0:-1,:]
+               # N_ST= raw_data[1:,:]
+                #C_RT= RL_DATA_Rewards[raw_data_ind][1:]
+                #t_s=raw_data.shape[0]
+                
+                #print C_ST.shape
+                #print N_ST.shape
+                #print(sess.run([V_Itr.TD_Zero],feed_dict={R_CT:C_RT,St:C_ST,Stp1:N_ST,time_stamp:t_s}))
+                #print(sess.run([wieght_checking],feed_dict={R_CT:C_RT,St:C_ST,Stp1:N_ST,time_stamp:t_s}))
+                
+                    
+            
+                
+                    
+if __name__ == '__main__':
+    main()
