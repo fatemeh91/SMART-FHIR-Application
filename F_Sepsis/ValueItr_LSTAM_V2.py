@@ -232,6 +232,7 @@ def main():
                         nl_t=[0.0]    
                         total_error=sess.run([V_Itr.TD_Zero],feed_dict={R_CT:rs, St:cs,Stp1:ns,cellm1:pcell,ym1:py,Nlast_Ts:nl_t,AccLoss:total_error,Batch_Loss:total_error_acroos_batch})[0][0]
                         total_error_acroos_batch+=total_error
+                        print total_error
                         
                     
                     # for the last pateint in batch
@@ -262,7 +263,7 @@ def main():
                         
                     
                     
-                    #print 'error for batch'+'\t'+str(bach_ind)
+                    print 'error for batch'+'\t'+str(bach_ind)
                     print total_error[0][0]
                     
                         
@@ -271,9 +272,7 @@ def main():
                     
                 print 'step'+str(step)    
                 step+=1
-                if(step>40):
-                    import sys
-                    sys.exit(1)
+
 #                total_error_V=[0]
 #                for v_ind in range(len(RL_DATA_X_Valid)):
 #                    RL_DATA_encoded_X=RL_DATA_X_Valid[v_ind]

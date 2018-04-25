@@ -13,14 +13,19 @@ def main():
     plot()
     return None
 
-def plot(X):
+def plot(data):
+    print len(data)
+    for x_ind in range(len(data)):
+        plt.subplot(10,10,int(x_ind)+1) # column,row, sub 
+        plt.plot(data[x_ind], 'o-')
+        print x_ind
     
-    for x_ind in range(len(X)):
-        print str(210+int(x_ind)+1)
-        plt.subplot(20,5,int(x_ind)+1) # column,row, sub 
-        plt.plot(X[x_ind], 'o-')
-        plt.show()
-        plt.savefig('function_Value.png')
+    #plt.subplots_adjust(top=0.92, bottom=0.18, left=0.35, right=0.35, hspace=0.95,
+     #               wspace=0.65)
+    fig1 = plt.gcf()
+    plt.show()
+    plt.draw()
+    fig1.savefig('function_Value2.png',dpi=100)
     return None
 
 

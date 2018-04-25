@@ -14,8 +14,10 @@ Created on Tue Mar 27 16:28:36 2018
 @author: iam
 """
 
+# for optmizing a model
+
 from GPyOpt.methods import BayesianOptimization
-from ValueItr_LSTAM_V2_Bays import Main_Loop
+from ValueItr_LSTAM_v2_Bays import Main_Loop
 import numpy as np
 
 import numpy as np
@@ -25,8 +27,20 @@ from pyGPGO.surrogates.GaussianProcess import GaussianProcess
 from pyGPGO.GPGO import GPGO
 
 
-
 def main():
+    from functools import partial
+    from skopt.plots import plot_evaluations , plot_objective
+    from skopt import gp_minimize, forest_minimize, dummy_minimize
+    bounds = [(0., 1.),] * 8
+    n_calls = 200
+
+    forest_res = gp_minimize(Main_Loop, bounds)
+
+    _ = plot_evaluations(forest_res)
+    _ = plot_objective(forest_res)
+    
+    
+def main2():
 
     
     sexp = squaredExponential()

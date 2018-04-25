@@ -10,6 +10,9 @@ import tensorflow as tf
 import functools 
 
 
+#abs error is considered and everything works well with this code
+
+
 
 def doublewrap(function):
     """
@@ -234,7 +237,7 @@ class LSTM_Bolck():
     @define_scope
     def optimization(self):
         
-        opt=tf.train.RMSPropOptimizer(self.learning_rate).minimize(self.TD_Zero/10)
+        opt=tf.train.RMSPropOptimizer(self.learning_rate).minimize(self.TD_Zero/125)
         
         return opt   
         

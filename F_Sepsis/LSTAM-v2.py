@@ -17,7 +17,7 @@ Created on Thu Apr 12 11:17:59 2018
 import tensorflow as tf
 import functools 
 
-
+# this version of LSTAM  this version has for problem 
 
 def doublewrap(function):
     """
