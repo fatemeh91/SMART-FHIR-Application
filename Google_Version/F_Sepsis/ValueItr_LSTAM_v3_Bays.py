@@ -157,7 +157,7 @@ def Main_Loop(r):
                         temp = RL_DATA_COVAR_Train[d_ind]
                         C_ST=np.concatenate([RL_DATA_encoded_X[:,:],temp[:,:]],1)
                         C_R=np.asarray(RL_DATA_Rewards_Train[d_ind])
-                        t_s=(C_R.shape[1]) #another bug
+                        t_s=(C_R.shape[1]) 
 
                         #print 'patient:'+'\t'+str(d_ind)
                         for St_ind in range((t_s-1)):
@@ -173,7 +173,7 @@ def Main_Loop(r):
                         #compute the last time stamp
                         cs=np.transpose(np.reshape(C_ST[-1],[1,C_ST.shape[1]]))
                         ns=np.transpose(np.reshape(C_ST[-1],[1,C_ST.shape[1]]))
-                        rs=np.reshape(C_R[-1],[1,1])
+                        rs=np.reshape(C_R[0,-1],[1,1])
                         nl_t=[0.0]    
                         t_e,hs=sess.run([V_Itr.TD_Zero,V_Itr.predict],feed_dict={R_CT:rs, St:cs,Stp1:ns,cellm1:pcell,ym1:py,Nlast_Ts:nl_t,AccLoss:total_error,Batch_Loss:[0]})
                         total_error=t_e[0][0]
@@ -190,13 +190,13 @@ def Main_Loop(r):
                     temp = RL_DATA_COVAR_Train[batch_ind*batch_size+batch_size]
                     C_ST=np.concatenate([RL_DATA_encoded_X[:,:],temp[:,:]],1)
                     C_R=np.asarray(RL_DATA_Rewards_Train[batch_ind*batch_size+batch_size])
-                    t_s=(C_R.shape[0])
+                    t_s=(C_R.shape[1])
                     
                 
                     for St_ind in range((t_s-1)):
                         cs=np.transpose(np.reshape(C_ST[St_ind],[1,C_ST.shape[1]]))
                         ns=np.transpose(np.reshape(C_ST[St_ind+1],[1,C_ST.shape[1]]))
-                        rs=np.reshape(C_R[St_ind],[1,1])
+                        rs=np.reshape(C_R[0,St_ind],[1,1])
                             
                         t_e,hs=sess.run([V_Itr.TD_Zero,V_Itr.predict],feed_dict={R_CT:rs, St:cs,Stp1:ns,cellm1:pcell,ym1:py,Nlast_Ts:nl_t,AccLoss:total_error,Batch_Loss:[0]})
                         total_error=t_e[0][0]
@@ -206,7 +206,7 @@ def Main_Loop(r):
                     #compute the last time stamp for the last patient in batch 
                     cs=np.transpose(np.reshape(C_ST[-1],[1,C_ST.shape[1]]))
                     ns=np.transpose(np.reshape(C_ST[-1],[1,C_ST.shape[1]]))
-                    rs=np.reshape(C_R[-1],[1,1])
+                    rs=np.reshape(C_R[0,-1],[1,1])
                     nl_t=[0.0]    
                     total_error_acroos_batch+=total_error
                     total_error,_=sess.run([V_Itr.TD_Zero,V_Itr.optimization],feed_dict={R_CT:rs, St:cs,Stp1:ns,cellm1:pcell,ym1:py,Nlast_Ts:nl_t,AccLoss:total_error,Batch_Loss:total_error_acroos_batch})
@@ -248,12 +248,12 @@ def Main_Loop(r):
                         temp=RL_DATA_COVAR_Valid[d_ind]
                         C_ST=np.concatenate([RL_DATA_encoded_X[:,:],temp[:,:]],1)
                         C_R=np.asarray(RL_DATA_Rewards_Valid[d_ind])
-                        t_s=(C_R.shape[0])
+                        t_s=(C_R.shape[1])
                         #during time stamp
                         for St_ind in range((t_s-1)):
                             cs=np.transpose(np.reshape(C_ST[St_ind],[1,C_ST.shape[1]]))
                             ns=np.transpose(np.reshape(C_ST[St_ind+1],[1,C_ST.shape[1]]))
-                            rs=np.reshape(C_R[St_ind],[1,1])
+                            rs=np.reshape(C_R[0,St_ind],[1,1])
                             
                             t_e,hs=sess.run([V_Itr.TD_Zero,V_Itr.predict],feed_dict={R_CT:rs, St:cs,Stp1:ns,cellm1:pcell,ym1:py,Nlast_Ts:nl_t,AccLoss:total_error,Batch_Loss:[0]})
                             total_error=t_e[0][0]
@@ -264,7 +264,7 @@ def Main_Loop(r):
                         #compute the last time stamp
                         cs=np.transpose(np.reshape(C_ST[-1],[1,C_ST.shape[1]]))
                         ns=np.transpose(np.reshape(C_ST[-1],[1,C_ST.shape[1]]))
-                        rs=np.reshape(C_R[-1],[1,1])
+                        rs=np.reshape(C_R[0,-1],[1,1])
                         nl_t=[0.0]    
                         t_e,hs=sess.run([V_Itr.TD_Zero,V_Itr.predict],feed_dict={R_CT:rs, St:cs,Stp1:ns,cellm1:pcell,ym1:py,Nlast_Ts:nl_t,AccLoss:total_error,Batch_Loss:[0]})
                         total_error=t_e[0][0]
@@ -314,12 +314,12 @@ def Main_Loop(r):
                 temp = RL_DATA_COVAR_Valid[v_ind]
                 C_ST=np.concatenate([RL_DATA_encoded_X[:,:],temp[:,:]],1)
                 C_R=np.asarray(RL_DATA_Rewards_Valid[v_ind])
-                t_s=(C_R.shape[0])
+                t_s=(C_R.shape[1])
                         
                 for St_ind in range((t_s-1)):
                     cs=np.transpose(np.reshape(C_ST[St_ind],[1,C_ST.shape[1]]))
                     ns=np.transpose(np.reshape(C_ST[St_ind+1],[1,C_ST.shape[1]]))
-                    rs=np.reshape(C_R[St_ind],[1,1])
+                    rs=np.reshape(C_R[0,St_ind],[1,1])
                     t_e,hs=sess.run([V_Itr.TD_Zero,V_Itr.predict],feed_dict={R_CT:rs, St:cs,Stp1:ns,cellm1:pcell,ym1:py,Nlast_Ts:nl_t,AccLoss:total_error,Batch_Loss:[0]})
                     pcell=hs[0][0]
                     total_error=t_e[0][0]
@@ -330,7 +330,7 @@ def Main_Loop(r):
                 #compute the last time stamp
                 cs=np.transpose(np.reshape(C_ST[-1],[1,C_ST.shape[1]]))
                 ns=np.transpose(np.reshape(C_ST[-1],[1,C_ST.shape[1]]))
-                rs=np.reshape(C_R[-1],[1,1])
+                rs=np.reshape(C_R[0,-1],[1,1])
                 nl_t=[0.0]    
                 t_e,hs=sess.run([V_Itr.TD_Zero,V_Itr.predict],feed_dict={R_CT:rs, St:cs,Stp1:ns,cellm1:pcell,ym1:py,Nlast_Ts:nl_t,AccLoss:total_error,Batch_Loss:[0]})
                 pcell=hs[0][0]
@@ -388,9 +388,7 @@ def Main_Loop(r):
                 pd.DataFrame.to_csv(df1,file_name)
                 filepath='gs://emory-sepsis-data2/precision_ech500_600patient_batch10_size60_AUCROCjob_mortalrew.csv'
                 call(["gsutil","-m","cp",file_name,filepath])
-
-
-
+                
                 import pandas as pd
                 from subprocess import call
                 df1 = pd.DataFrame(data=np.asarray(recall))
@@ -398,39 +396,6 @@ def Main_Loop(r):
                 pd.DataFrame.to_csv(df1,file_name)
                 filepath='gs://emory-sepsis-data2/recall_epch500_600patient_batch10_size60_AUCROCjob_mortalrew.csv'
                 call(["gsutil","-m","cp",file_name,filepath])
-
-
-
-
-
-
-
-
-            
-                #clf.fit(X_train,Y_Train)
-                #test_prediction=clf.decision_function(X_test)
-                #tn=0
-                #tp=0
-                #fn=0
-                #fp=0
-                #test_prediction=np.sort(test_prediction)
-                #for val_ind in range(len(Y_Test)):
-                    #if Y_Test[val_ind]==test_prediction[val_ind]:
-                        #if test_prediction[val_ind]==1:
-                            #tp+=1
-                        #else:
-                            #tn+=1
-                    #else:
-                        #if test_prediction[val_ind]==1:
-                            #fp+=1
-                        #else:
-                            #fn+=1
-                #sensitivity=tp/(tp+fn)
-                #specifity=tn/(tn+fp)
-                #print sensitivity
-                #print specifity
-                #print 1-specifity
-                #error=np.float(fp+fn)
                 print 'AUC_Nomortalityorhospiecesrewards_formartalityclassification'+str(AUC)
                 return AUC
                 
