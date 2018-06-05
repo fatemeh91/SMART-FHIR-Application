@@ -210,7 +210,7 @@ class LSTM_Bolck():
             return F
         # cell
         def cell(X,Ym1,cellm1):
-            cell=tf.add(tf.multiply(block_input(X,Ym1),input_gate(X,Ym1,cellm1)),tf.multiply(cellm1(X,Ym1,cellm1)))
+            cell=tf.add(tf.multiply(block_input(X,Ym1),input_gate(X,Ym1,cellm1)),tf.multiply(cellm1,forget_gate(X,Ym1,cellm1)))
             return cell
         # output gate
         def output_gate(X,Ym1,cellm1):
